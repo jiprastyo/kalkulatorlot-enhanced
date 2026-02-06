@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Lot Saham IDX - Enhanced</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .calculator-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .result {
+            display: none;
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 20px;
+            border: 2px solid #667eea;
+        }
+        
+        .result.show {
+            display: block;
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #e1e8ed;
+        }
+        
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .result-label {
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .result-value {
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        /* Stock Info Panel */
+        .stock-info-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .info-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .info-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        /* Technical Indicators */
+        .technical-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .tech-item {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        
+        .tech-label {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .tech-value {
+            font-weight: 700;
+            font-size: 1.1em;
+            color: #333;
+        }
+        
+        /* News Section */
+        .news-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .news-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .news-meta {
+            font-size: 0.85em;
+            color: #666;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .news-meta span {
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .sentiment-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+        
+        .sentiment-positive {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .sentiment-neutral {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .sentiment-negative {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        /* Trend Indicator */
+        .trend-indicator {
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+        
+        .trend-bullish {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .trend-bearish {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        
+        .loading:after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+        
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+        
+        /* Error State */
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            border-left: 4px solid #721c24;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .technical-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stock-info-panel {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Kalkulator Lot Saham IDX</h1>
+            <p>Dengan Analisa Teknikal & Berita Terkini</p>
+        </div>
+        
+        <div class="content">
+            <div class="calculator-section">
+                <h2 style="margin-bottom: 20px;">Hitung Lot Saham</h2>
+                
+                <div class="form-group">
+                    <label for="stockCode">Kode Saham</label>
+                    <select id="stockCode" onchange="loadStockData()">
+                        <option value="">Pilih kode saham...</option>
+                        <option value="BBCA">BBCA - Bank Central Asia</option>
+                        <option value="BBRI">BBRI - Bank Rakyat Indonesia</option>
+                        <option value="BMRI">BMRI - Bank Mandiri</option>
+                        <option value="TLKM">TLKM - Telkom Indonesia</option>
+                        <option value="ASII">ASII - Astra International</option>
+                        <option value="UNVR">UNVR - Unilever Indonesia</option>
+                        <option value="KLBF">KLBF - Kalbe Farma</option>
+                        <option value="ICBP">ICBP - Indofood CBP</option>
+                        <option value="INDF">INDF - Indofood Sukses Makmur</option>
+                        <option value="SMGR">SMGR - Semen Indonesia</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="stockPrice">Harga Saham (Rp)</label>
+                    <input type="number" id="stockPrice" placeholder="Contoh: 8500" min="0" step="1">
+                </div>
+                
+                <div class="form-group">
+                    <label for="capital">Modal (Rp)</label>
+                    <input type="number" id="capital" placeholder="Contoh: 10000000" min="0" step="1000">
+                </div>
+                
+                <button class="btn" onclick="calculateLot()">Hitung Lot</button>
+                
+                <div id="result" class="result">
+                    <h3 style="margin-bottom: 15px; color: #667eea;">Hasil Perhitungan</h3>
+                    <div class="result-item">
+                        <span class="result-label">Jumlah Lot:</span>
+                        <span class="result-value" id="lotAmount">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Jumlah Saham:</span>
+                        <span class="result-value" id="shareAmount">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Total Investasi:</span>
+                        <span class="result-value" id="totalInvestment">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Sisa Modal:</span>
+                        <span class="result-value" id="remainingCapital">-</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Stock Information Panel -->
+            <div id="stockInfoPanel" class="stock-info-panel" style="display: none;">
+                <!-- Technical Indicators Card -->
+                <div class="info-card">
+                    <h3>📊 Indikator Teknikal</h3>
+                    <div id="technicalIndicators" class="loading">Memuat data</div>
+                </div>
+                
+                <!-- Price & Trend Card -->
+                <div class="info-card">
+                    <h3>💹 Harga & Trend</h3>
+                    <div id="priceInfo" class="loading">Memuat data</div>
+                </div>
+                
+                <!-- News Card -->
+                <div class="info-card" style="grid-column: span 2;">
+                    <h3>📰 Berita Terkini</h3>
+                    <div id="newsSection" class="loading">Memuat berita</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const DATA_BASE_URL = './data/'; // Change this to your GitHub Pages URL
+        let currentStockData = null;
+        
+        // Format currency
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            }).format(amount);
+        }
+        
+        // Format number with thousand separator
+        function formatNumber(num) {
+            return new Intl.NumberFormat('id-ID').format(num);
+        }
+        
+        // Calculate lot
+        function calculateLot() {
+            const price = parseFloat(document.getElementById('stockPrice').value);
+            const capital = parseFloat(document.getElementById('capital').value);
+            
+            if (!price || !capital || price <= 0 || capital <= 0) {
+                alert('Mohon isi semua field dengan benar');
+                return;
+            }
+            
+            const sharesPerLot = 100;
+            const pricePerLot = price * sharesPerLot;
+            const maxLots = Math.floor(capital / pricePerLot);
+            const totalShares = maxLots * sharesPerLot;
+            const totalInvestment = maxLots * pricePerLot;
+            const remaining = capital - totalInvestment;
+            
+            document.getElementById('lotAmount').textContent = formatNumber(maxLots);
+            document.getElementById('shareAmount').textContent = formatNumber(totalShares);
+            document.getElementById('totalInvestment').textContent = formatCurrency(totalInvestment);
+            document.getElementById('remainingCapital').textContent = formatCurrency(remaining);
+            
+            document.getElementById('result').classList.add('show');
+        }
+        
+        // Load stock data
+        async function loadStockData() {
+            const stockCode = document.getElementById('stockCode').value;
+            
+            if (!stockCode) {
+                document.getElementById('stockInfoPanel').style.display = 'none';
+                return;
+            }
+            
+            // Show loading state
+            document.getElementById('stockInfoPanel').style.display = 'grid';
+            document.getElementById('technicalIndicators').innerHTML = '<div class="loading">Memuat data</div>';
+            document.getElementById('priceInfo').innerHTML = '<div class="loading">Memuat data</div>';
+            document.getElementById('newsSection').innerHTML = '<div class="loading">Memuat berita</div>';
+            
+            try {
+                // Fetch stock data from your repo
+                const response = await fetch(`${DATA_BASE_URL}${stockCode}.json`);
+                
+                if (!response.ok) {
+                    throw new Error('Data tidak tersedia');
+                }
+                
+                currentStockData = await response.json();
+                
+                // Update price field if available
+                if (currentStockData.regularMarketPrice) {
+                    document.getElementById('stockPrice').value = Math.round(currentStockData.regularMarketPrice);
+                }
+                
+                // Display data
+                displayTechnicalIndicators();
+                displayPriceInfo();
+                displayNews();
+                
+            } catch (error) {
+                console.error('Error loading stock data:', error);
+                document.getElementById('technicalIndicators').innerHTML = 
+                    '<div class="error-message">Data tidak tersedia. Silakan gunakan GitHub Actions untuk mengupdate data.</div>';
+                document.getElementById('priceInfo').innerHTML = 
+                    '<div class="error-message">Data tidak tersedia.</div>';
+                document.getElementById('newsSection').innerHTML = 
+                    '<div class="error-message">Berita tidak tersedia.</div>';
+            }
+        }
+        
+        // Display technical indicators
+        function displayTechnicalIndicators() {
+            const tech = currentStockData.technicalIndicators;
+            
+            if (!tech) {
+                document.getElementById('technicalIndicators').innerHTML = 
+                    '<div class="error-message">Indikator teknikal tidak tersedia</div>';
+                return;
+            }
+            
+            const html = `
+                <div class="technical-grid">
+                    <div class="tech-item">
+                        <div class="tech-label">RSI (14)</div>
+                        <div class="tech-value">${tech.rsi ? tech.rsi.toFixed(2) : 'N/A'}</div>
+                        ${tech.rsiSignal ? `<div class="sentiment-badge sentiment-${tech.rsiSignal === 'overbought' ? 'negative' : tech.rsiSignal === 'oversold' ? 'positive' : 'neutral'}">${tech.rsiSignal}</div>` : ''}
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-label">SMA 20</div>
+                        <div class="tech-value">${tech.sma20 ? formatNumber(Math.round(tech.sma20)) : 'N/A'}</div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-label">SMA 50</div>
+                        <div class="tech-value">${tech.sma50 ? formatNumber(Math.round(tech.sma50)) : 'N/A'}</div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-label">SMA 200</div>
+                        <div class="tech-value">${tech.sma200 ? formatNumber(Math.round(tech.sma200)) : 'N/A'}</div>
+                    </div>
+                    ${tech.macd ? `
+                    <div class="tech-item">
+                        <div class="tech-label">MACD</div>
+                        <div class="tech-value">${tech.macd.macd.toFixed(2)}</div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-label">Signal</div>
+                        <div class="tech-value">${tech.macd.signal.toFixed(2)}</div>
+                    </div>
+                    ` : ''}
+                    ${tech.supportResistance ? `
+                    <div class="tech-item">
+                        <div class="tech-label">Support</div>
+                        <div class="tech-value">${formatNumber(Math.round(tech.supportResistance.support))}</div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-label">Resistance</div>
+                        <div class="tech-value">${formatNumber(Math.round(tech.supportResistance.resistance))}</div>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            document.getElementById('technicalIndicators').innerHTML = html;
+        }
+        
+        // Display price info
+        function displayPriceInfo() {
+            const price = currentStockData.regularMarketPrice;
+            const prevClose = currentStockData.previousClose;
+            const change = price - prevClose;
+            const changePercent = (change / prevClose) * 100;
+            const tech = currentStockData.technicalIndicators;
+            
+            const html = `
+                <div style="margin-bottom: 15px;">
+                    <div style="font-size: 2em; font-weight: bold; color: ${change >= 0 ? '#155724' : '#721c24'};">
+                        ${formatCurrency(price)}
+                    </div>
+                    <div style="font-size: 1.1em; color: ${change >= 0 ? '#155724' : '#721c24'}; margin-top: 5px;">
+                        ${change >= 0 ? '▲' : '▼'} ${formatNumber(Math.abs(change))} (${changePercent.toFixed(2)}%)
+                    </div>
+                </div>
+                
+                ${tech && tech.trend ? `
+                <div style="margin-top: 15px;">
+                    <div style="margin-bottom: 8px; font-weight: 600;">Trend Analysis:</div>
+                    <div style="display: flex; flex-direction: column; gap: 5px;">
+                        <div>
+                            <span style="color: #666;">Short-term:</span> 
+                            <span class="trend-indicator trend-${tech.trend.shortTerm}">${tech.trend.shortTerm}</span>
+                        </div>
+                        <div>
+                            <span style="color: #666;">Medium-term:</span> 
+                            <span class="trend-indicator trend-${tech.trend.mediumTerm}">${tech.trend.mediumTerm}</span>
+                        </div>
+                        ${tech.trend.longTerm !== 'insufficient data' ? `
+                        <div>
+                            <span style="color: #666;">Long-term:</span> 
+                            <span class="trend-indicator trend-${tech.trend.longTerm}">${tech.trend.longTerm}</span>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+                ` : ''}
+                
+                ${tech && tech.volume ? `
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e1e8ed;">
+                    <div style="margin-bottom: 5px;"><strong>Volume:</strong> ${formatNumber(tech.volume.current)}</div>
+                    <div style="font-size: 0.9em; color: #666;">
+                        Avg: ${formatNumber(Math.round(tech.volume.average))} (${tech.volume.trend})
+                    </div>
+                </div>
+                ` : ''}
+                
+                <div style="margin-top: 15px; font-size: 0.8em; color: #999;">
+                    Last update: ${new Date(currentStockData.lastUpdate).toLocaleString('id-ID')}
+                </div>
+            `;
+            
+            document.getElementById('priceInfo').innerHTML = html;
+        }
+        
+        // Display news
+        function displayNews() {
+            const news = currentStockData.news;
+            
+            if (!news || news.length === 0) {
+                document.getElementById('newsSection').innerHTML = 
+                    '<div style="color: #666; text-align: center; padding: 20px;">Tidak ada berita terkini</div>';
+                return;
+            }
+            
+            const html = news.map(item => `
+                <div class="news-item">
+                    <div class="news-title">${item.title}</div>
+                    <div class="news-meta">
+                        <span>📅 ${item.date}</span>
+                        <span>📰 ${item.source}</span>
+                        ${item.sentiment ? `<span class="sentiment-badge sentiment-${item.sentiment}">${item.sentiment}</span>` : ''}
+                    </div>
+                </div>
+            `).join('');
+            
+            document.getElementById('newsSection').innerHTML = html;
+        }
+    </script>
+</body>
+</html>
