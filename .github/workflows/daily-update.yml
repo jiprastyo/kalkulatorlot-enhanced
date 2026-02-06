@@ -1,0 +1,40 @@
+name: Daily Stock Data Update
+
+on:
+  schedule:
+    # Run every day at 17:00 WIB (10:00 UTC) - after market close
+    - cron: '0 10 * * 1-5'  # Monday to Friday
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  update-stock-data:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          
+      - name: Install dependencies
+        run: |
+          npm install axios cheerio
+          
+      - name: Fetch stock data
+        run: node scripts/fetch-stock-data.js
+        
+      - name: Calculate technical indicators
+        run: node scripts/calculate-technicals.js
+        
+      - name: Fetch news
+        run: node scripts/fetch-news.js
+        
+      - name: Commit and push if changed
+        run: |
+          git config --global user.name 'GitHub Actions Bot'
+          git config --global user.email 'actions@github.com'
+          git add data/*.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update stock data - $(date '+%Y-%m-%d')" && git push)
