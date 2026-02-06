@@ -1,0 +1,35 @@
+{
+  "name": "kalkulatorlot-enhanced",
+  "version": "2.0.0",
+  "description": "Enhanced IDX Stock Calculator with technical analysis and news",
+  "main": "index.html",
+  "scripts": {
+    "fetch-data": "node scripts/fetch-stock-data.js",
+    "calculate-tech": "node scripts/calculate-technicals.js",
+    "fetch-news": "node scripts/fetch-news.js",
+    "update-all": "npm run fetch-data && npm run calculate-tech && npm run fetch-news",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jiprastyo/kalkulatorlot.git"
+  },
+  "keywords": [
+    "idx",
+    "indonesia",
+    "stock",
+    "calculator",
+    "technical-analysis",
+    "finance"
+  ],
+  "author": "jiprastyo",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.7",
+    "cheerio": "^1.0.0-rc.12"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
